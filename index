@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizzaria Chalé - Faça seu Pedido Online</title>
+    <style>
+        :root {
+            --primary: #8B0000;
+            --secondary: #D4AF37;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), #6a0000);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            font-weight: bold;
+            color: #777;
+        }
+        
+        .step.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .step.completed {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .step-section {
+            display: none;
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .step-section.active {
+            display: block;
+        }
+        
+        .section-title {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .size-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .size-option {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .size-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+        
+        .size-option.selected {
+            border-color: var(--primary);
+            background-color: rgba(139, 0, 0, 0.05);
+            transform: translateY(-5px);
+        }
+        
+        .size-label {
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .size-details {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .price {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+        
+        .pizza-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .pizza-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pizza-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .pizza-item.selected {
+            border-color: var(--primary);
+            background-color: rgba(139, 0, 0, 0.05);
+        }
+        
+        .pizza-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .pizza-ingredients {
+            color: #666;
+            font-size: 0.9rem;
+            height: 60px;
+            overflow: hidden;
+        }
+        
+        .pizza-type-selector {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            justify-content: center;
+        }
+        
+        .type-option {
+            padding: 10px 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .type-option:hover {
+            border-color: var(--primary);
+        }
+        
+        .type-option.selected {
+            border-color: var(--primary);
+            background-color: rgba(139, 0, 0, 0.05);
+            color: var(--primary);
+        }
+        
+        .half-pizza-container {
+            display: flex;
+            margin-top: 20px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .half-pizza {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .half-pizza:first-child {
+            border-right: 1px dashed #ddd;
+        }
+        
+        .half-pizza.selected {
+            background-color: rgba(139, 0, 0, 0.05);
+        }
+        
+        .half-pizza-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .selected-pizza-name {
+            font-size: 0.9rem;
+            color: #666;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .whole-pizza-container {
+            margin-top: 20px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .whole-pizza-container.selected {
+            border-color: var(--primary);
+            background-color: rgba(139, 0, 0, 0.05);
+        }
+        
+        .whole-pizza-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .borda-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .borda-option {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .borda-option:hover {
+            border-color: var(--secondary);
+        }
+        
+        .borda-option.selected {
+            border-color: var(--secondary);
+            background-color: rgba(212, 175, 55, 0.1);
+        }
+        
+        .borda-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .borda-price {
+            font-weight: bold;
+            color: var(--secondary);
+        }
+        
+        .refri-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .refri-option {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .refri-option:hover {
+            border-color: #007bff;
+        }
+        
+        .refri-option.selected {
+            border-color: #007bff;
+            background-color: rgba(0, 123, 255, 0.1);
+        }
+        
+        .refri-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .refri-price {
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .order-summary {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-top: 3px solid var(--primary);
+        }
+        
+        .order-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .order-item-details {
+            flex: 1;
+        }
+        
+        .order-item-name {
+            font-weight: bold;
+        }
+        
+        .order-item-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .order-item-price {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #ddd;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background-color: #a00000;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .btn-whatsapp {
+            background-color: #25D366;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .btn-whatsapp:hover {
+            background-color: #128C7E;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .pizza-counter {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 15px;
+        }
+        
+        .counter-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .counter-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .radio-option input {
+            margin-right: 8px;
+        }
+        
+        .delivery-fee {
+            color: var(--primary);
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .current-total {
+            background-color: #e9f7ef;
+            border: 1px solid #28a745;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .current-total-label {
+            font-weight: bold;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .current-total-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .size-options, .borda-options, .refri-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .pizza-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .half-pizza-container {
+                flex-direction: column;
+            }
+            
+            .half-pizza:first-child {
+                border-right: none;
+                border-bottom: 1px dashed #ddd;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .pizza-type-selector {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <span class="logo">🍕</span>
+            <h1>Pizzaria Chalé</h1>
+            <p>Faça seu pedido online</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="step-indicator">
+            <div class="step active" id="step1">1</div>
+            <div class="step" id="step2">2</div>
+            <div class="step" id="step3">3</div>
+            <div class="step" id="step4">4</div>
+            <div class="step" id="step5">5</div>
+            <div class="step" id="step6">6</div>
+        </div>
+        
+        <!-- Passo 1: Seleção do Tamanho -->
+        <div class="step-section active" id="section1">
+            <h2 class="section-title">Escolha o Tamanho da Pizza</h2>
+            <p>Selecione o tamanho da sua pizza:</p>
+            
+            <div class="size-options">
+                <div class="size-option" data-size="PP" data-price="30.00">
+                    <span class="size-label">PP (20cm)</span>
+                    <span class="size-details">2 fatias</span>
+                    <div class="price">R$ 30,00</div>
+                </div>
+                <div class="size-option" data-size="M" data-price="55.00">
+                    <span class="size-label">M (25cm)</span>
+                    <span class="size-details">4 fatias</span>
+                    <div class="price">R$ 55,00</div>
+                </div>
+                <div class="size-option" data-size="G" data-price="65.00">
+                    <span class="size-label">G (30cm)</span>
+                    <span class="size-details">6 fatias</span>
+                    <div class="price">R$ 65,00</div>
+                </div>
+                <div class="size-option" data-size="GG" data-price="75.00">
+                    <span class="size-label">GG (35cm)</span>
+                    <span class="size-details">8 fatias</span>
+                    <div class="price">R$ 75,00</div>
+                </div>
+            </div>
+            
+            <div class="navigation-buttons">
+                <div></div> <!-- Espaço vazio para alinhamento -->
+                <button class="btn" id="nextToStep2">Próximo</button>
+            </div>
+        </div>
+        
+        <!-- Passo 2: Seleção dos Sabores -->
+        <div class="step-section" id="section2">
+            <h2 class="section-title">Escolha os Sabores</h2>
+            <p>Selecione os sabores da sua pizza. Você pode escolher um sabor inteiro ou dois sabores (metade/metade):</p>
+            
+            <div class="pizza-counter">
+                <button class="counter-btn" id="decreasePizza">-</button>
+                <span class="counter-value" id="pizzaCount">1</span>
+                <button class="counter-btn" id="increasePizza">+</button>
+                <span>Pizza(s) no pedido</span>
+            </div>
+            
+            <div id="pizzaSelectionArea">
+                <!-- Área onde as seleções de pizza serão adicionadas dinamicamente -->
+            </div>
+            
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" id="backToStep1">Voltar</button>
+                <button class="btn" id="nextToStep3">Próximo</button>
+            </div>
+        </div>
+        
+        <!-- Passo 3: Seleção da Borda -->
+        <div class="step-section" id="section3">
+            <h2 class="section-title">Escolha a Borda</h2>
+            <p>Selecione o tipo de borda para sua pizza:</p>
+            
+            <div class="borda-options" id="bordaOptions">
+                <!-- As opções de borda serão carregadas dinamicamente conforme o tamanho selecionado -->
+            </div>
+            
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" id="backToStep2">Voltar</button>
+                <button class="btn" id="nextToStep4">Próximo</button>
+            </div>
+        </div>
+        
+        <!-- Passo 4: Seleção de Refrigerantes -->
+        <div class="step-section" id="section4">
+            <h2 class="section-title">Deseja Adicionar Refrigerante?</h2>
+            <p>Selecione os refrigerantes que deseja incluir no pedido:</p>
+            
+            <div class="refri-options">
+                <div class="refri-option" data-name="Coca Zero 1L" data-price="12.00">
+                    <span class="refri-label">Coca Zero 1L</span>
+                    <div class="refri-price">R$ 12,00</div>
+                </div>
+                <div class="refri-option" data-name="Coca-Cola 1L" data-price="12.00">
+                    <span class="refri-label">Coca-Cola 1L</span>
+                    <div class="refri-price">R$ 12,00</div>
+                </div>
+                <div class="refri-option" data-name="Guaraná 2L" data-price="15.00">
+                    <span class="refri-label">Guaraná 2L</span>
+                    <div class="refri-price">R$ 15,00</div>
+                </div>
+                <div class="refri-option" data-name="Coca Zero 2L" data-price="15.00">
+                    <span class="refri-label">Coca Zero 2L</span>
+                    <div class="refri-price">R$ 15,00</div>
+                </div>
+                <div class="refri-option" data-name="Coca-Cola 2L" data-price="15.00">
+                    <span class="refri-label">Coca-Cola 2L</span>
+                    <div class="refri-price">R$ 15,00</div>
+                </div>
+            </div>
+            
+            <div id="refriSelectionArea">
+                <!-- Área onde as seleções de refrigerante serão adicionadas dinamicamente -->
+            </div>
+            
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" id="backToStep3">Voltar</button>
+                <button class="btn" id="nextToStep5">Próximo</button>
+            </div>
+        </div>
+        
+        <!-- Passo 5: Informações de Entrega/Retirada e Pagamento -->
+        <div class="step-section" id="section5">
+            <h2 class="section-title">Informações de Entrega e Pagamento</h2>
+            
+            <div class="current-total">
+                <div class="current-total-label">Valor Atual do Pedido:</div>
+                <div class="current-total-value" id="currentTotalValue">R$ 0,00</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Nome:</label>
+                <input type="text" class="form-control" id="customerName" placeholder="Seu nome completo">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Tipo de Pedido:</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="orderType" value="retirada" checked>
+                        Retirada no Local
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="orderType" value="entrega">
+                        Entrega (+ R$ 5,00)
+                    </label>
+                </div>
+                <div class="delivery-fee hidden" id="deliveryFeeNote">Taxa de entrega: R$ 5,00</div>
+            </div>
+            
+            <div class="form-group hidden" id="deliveryAddressGroup">
+                <label class="form-label">Endereço de Entrega:</label>
+                <input type="text" class="form-control" id="deliveryAddress" placeholder="Rua, número, bairro">
+                <input type="text" class="form-control" id="deliveryReference" placeholder="Ponto de referência" style="margin-top: 10px;">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Forma de Pagamento:</label>
+                <div class="radio-group">
+                    <!-- CORREÇÃO: Cartão vem primeiro -->
+                    <label class="radio-option">
+                        <input type="radio" name="paymentMethod" value="cartao" checked>
+                        Cartão
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="paymentMethod" value="dinheiro">
+                        Dinheiro
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="paymentMethod" value="pix">
+                        PIX
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group hidden" id="changeGroup">
+                <label class="form-label">Precisa de troco? Se sim, para quanto?</label>
+                <input type="text" class="form-control" id="changeFor" placeholder="Ex: R$ 50,00">
+            </div>
+            
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" id="backToStep4">Voltar</button>
+                <button class="btn" id="nextToStep6">Próximo</button>
+            </div>
+        </div>
+        
+        <!-- Passo 6: Resumo e Finalização -->
+        <div class="step-section" id="section6">
+            <h2 class="section-title">Resumo do Pedido</h2>
+            <p>Revise seu pedido e finalize pelo WhatsApp:</p>
+            
+            <div class="order-summary">
+                <div class="order-items" id="orderItems">
+                    <!-- Itens do pedido serão adicionados aqui -->
+                </div>
+                <div class="order-total">
+                    <span>Total:</span>
+                    <span id="orderTotal">R$ 0,00</span>
+                </div>
+            </div>
+            
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" id="backToStep5">Voltar</button>
+                <button class="btn btn-whatsapp" id="finalizeOrder">
+                    <span>Finalizar Pedido pelo WhatsApp</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados do cardápio
+        const menu = [
+            { name: "À moda Chalé", ingredients: "Mussarela, calabresa, presunto, azeitona verde, cebola e pimentão" },
+            { name: "À moda Esmeraldas", ingredients: "Mussarela, salaminho, presunto, champignon, azeitona verde e manjericão" },
+            { name: "Portuguesa", ingredients: "Mussarela, calabresa, presunto, bacon, ovo, azeitona preta e tomate" },
+            { name: "Frango", ingredients: "Mussarela, frango desfiado e molho bolonhesa" },
+            { name: "Frango Catupiry", ingredients: "Mussarela, frango desfiado e catupiry" },
+            { name: "Palmito", ingredients: "Mussarela, palmito e molho bolonhesa" },
+            { name: "4 Queijos", ingredients: "Mussarela, catupiry, provolone e gorgonzola" },
+            { name: "Vegetariana", ingredients: "Mussarela, palmito, milho verde, azeitona verde, tomate, cebola e pimentão" },
+            { name: "Lombo Canadense", ingredients: "Mussarela e lombo canadense" },
+            { name: "Presunto", ingredients: "Mussarela e presunto" },
+            { name: "Presunto Especial", ingredients: "Mussarela, presunto, bacon, milho verde e tomate" },
+            { name: "Calabresa", ingredients: "Mussarela e calabresa" },
+            { name: "Atum", ingredients: "Mussarela, atum, tomate e salsa" },
+            { name: "Bacon", ingredients: "Mussarela, bacon, ovo e tomate" },
+            { name: "Nordestina", ingredients: "Mussarela, carne de sol, cebola roxa e catupiry" },
+            { name: "Marguerita", ingredients: "Mussarela, tomate e manjericão" },
+            { name: "Banana", ingredients: "Mussarela, banana e canela" }
+        ];
+
+        // Dados dos refrigerantes
+        const refrigerantes = [
+            { name: "Coca Zero 1L", price: 12.00 },
+            { name: "Coca-Cola 1L", price: 12.00 },
+            { name: "Guaraná 2L", price: 15.00 },
+            { name: "Coca Zero 2L", price: 15.00 },
+            { name: "Coca-Cola 2L", price: 15.00 }
+        ];
+
+        // Preços da borda por tamanho (conforme versão 1.0)
+        const bordaPrices = {
+            "PP": 0, // Não tem borda recheada para PP
+            "M": 8.00,
+            "G": 10.00,
+            "GG": 15.00
+        };
+
+        // Estado do pedido
+        let order = {
+            size: null,
+            sizePrice: 0,
+            pizzas: [],
+            borda: { type: "normal", price: 0 },
+            refrigerantes: [],
+            customerInfo: {
+                name: "",
+                orderType: "retirada",
+                address: "",
+                reference: "",
+                paymentMethod: "cartao", // CORREÇÃO: Cartão como padrão
+                changeFor: ""
+            },
+            total: 0
+        };
+
+        let currentPizzaCount = 1;
+
+        // Elementos DOM
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const step4 = document.getElementById('step4');
+        const step5 = document.getElementById('step5');
+        const step6 = document.getElementById('step6');
+        
+        const section1 = document.getElementById('section1');
+        const section2 = document.getElementById('section2');
+        const section3 = document.getElementById('section3');
+        const section4 = document.getElementById('section4');
+        const section5 = document.getElementById('section5');
+        const section6 = document.getElementById('section6');
+        
+        const pizzaCountEl = document.getElementById('pizzaCount');
+        const pizzaSelectionArea = document.getElementById('pizzaSelectionArea');
+        const refriSelectionArea = document.getElementById('refriSelectionArea');
+        const orderItemsEl = document.getElementById('orderItems');
+        const orderTotalEl = document.getElementById('orderTotal');
+        const currentTotalValue = document.getElementById('currentTotalValue');
+        const bordaOptionsEl = document.getElementById('bordaOptions');
+        
+        const customerNameEl = document.getElementById('customerName');
+        const deliveryAddressGroup = document.getElementById('deliveryAddressGroup');
+        const deliveryFeeNote = document.getElementById('deliveryFeeNote');
+        const changeGroup = document.getElementById('changeGroup');
+        const changeForEl = document.getElementById('changeFor');
+        
+        // Navegação entre passos
+        document.getElementById('nextToStep2').addEventListener('click', function() {
+            if (!order.size) {
+                alert('Por favor, selecione um tamanho para a pizza.');
+                return;
+            }
+            
+            goToStep(2);
+            renderPizzaSelection();
+        });
+        
+        document.getElementById('backToStep1').addEventListener('click', function() {
+            goToStep(1);
+        });
+        
+        document.getElementById('nextToStep3').addEventListener('click', function() {
+            if (order.pizzas.length === 0) {
+                alert('Por favor, selecione pelo menos um sabor para sua pizza.');
+                return;
+            }
+            
+            goToStep(3);
+            renderBordaOptions();
+        });
+        
+        document.getElementById('backToStep2').addEventListener('click', function() {
+            goToStep(2);
+        });
+        
+        document.getElementById('nextToStep4').addEventListener('click', function() {
+            if (!order.borda.type) {
+                alert('Por favor, selecione um tipo de borda.');
+                return;
+            }
+            
+            goToStep(4);
+            renderRefriSelection();
+        });
+        
+        document.getElementById('backToStep3').addEventListener('click', function() {
+            goToStep(3);
+        });
+        
+        document.getElementById('nextToStep5').addEventListener('click', function() {
+            goToStep(5);
+            updateCurrentTotal();
+        });
+        
+        document.getElementById('backToStep4').addEventListener('click', function() {
+            goToStep(4);
+        });
+        
+        document.getElementById('nextToStep6').addEventListener('click', function() {
+            if (!customerNameEl.value.trim()) {
+                alert('Por favor, informe seu nome.');
+                return;
+            }
+            
+            if (order.customerInfo.orderType === 'entrega' && 
+                (!document.getElementById('deliveryAddress').value.trim() || 
+                 !document.getElementById('deliveryReference').value.trim())) {
+                alert('Por favor, preencha o endereço completo e ponto de referência para entrega.');
+                return;
+            }
+            
+            // CORREÇÃO: Troco é obrigatório apenas para pagamento em dinheiro
+            if (order.customerInfo.paymentMethod === 'dinheiro' && 
+                !changeForEl.value.trim()) {
+                alert('Por favor, informe para quanto precisa de troco.');
+                return;
+            }
+            
+            // Salvar informações do cliente
+            order.customerInfo.name = customerNameEl.value.trim();
+            order.customerInfo.address = document.getElementById('deliveryAddress').value.trim();
+            order.customerInfo.reference = document.getElementById('deliveryReference').value.trim();
+            order.customerInfo.changeFor = changeForEl.value.trim();
+            
+            goToStep(6);
+            renderOrderSummary();
+        });
+        
+        document.getElementById('backToStep5').addEventListener('click', function() {
+            goToStep(5);
+        });
+        
+        // Controle de quantidade de pizzas
+        document.getElementById('increasePizza').addEventListener('click', function() {
+            currentPizzaCount++;
+            pizzaCountEl.textContent = currentPizzaCount;
+            renderPizzaSelection();
+        });
+        
+        document.getElementById('decreasePizza').addEventListener('click', function() {
+            if (currentPizzaCount > 1) {
+                currentPizzaCount--;
+                pizzaCountEl.textContent = currentPizzaCount;
+                renderPizzaSelection();
+            }
+        });
+        
+        // Seleção de tamanho
+        document.querySelectorAll('.size-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.size-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                this.classList.add('selected');
+                
+                order.size = this.getAttribute('data-size');
+                order.sizePrice = parseFloat(this.getAttribute('data-price'));
+                
+                // Resetar borda quando mudar o tamanho
+                order.borda = { type: "normal", price: 0 };
+            });
+        });
+        
+        // Controle de tipo de pedido (entrega/retirada)
+        document.querySelectorAll('input[name="orderType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                order.customerInfo.orderType = this.value;
+                
+                if (this.value === 'entrega') {
+                    deliveryAddressGroup.classList.remove('hidden');
+                    deliveryFeeNote.classList.remove('hidden');
+                } else {
+                    deliveryAddressGroup.classList.add('hidden');
+                    deliveryFeeNote.classList.add('hidden');
+                }
+                
+                updateCurrentTotal();
+            });
+        });
+        
+        // CORREÇÃO: Controle de forma de pagamento - troco aparece apenas para dinheiro
+        document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                order.customerInfo.paymentMethod = this.value;
+                
+                // Mostrar campo de troco apenas para pagamento em dinheiro
+                if (this.value === 'dinheiro') {
+                    changeGroup.classList.remove('hidden');
+                } else {
+                    changeGroup.classList.add('hidden');
+                }
+            });
+        });
+        
+        // Seleção de refrigerantes
+        document.querySelectorAll('.refri-option').forEach(option => {
+            option.addEventListener('click', function() {
+                this.classList.toggle('selected');
+                
+                const refriName = this.getAttribute('data-name');
+                const refriPrice = parseFloat(this.getAttribute('data-price'));
+                
+                // Verificar se já está no pedido
+                const existingIndex = order.refrigerantes.findIndex(r => r.name === refriName);
+                
+                if (existingIndex !== -1) {
+                    // Remover se já estiver selecionado
+                    order.refrigerantes.splice(existingIndex, 1);
+                } else {
+                    // Adicionar se não estiver selecionado
+                    order.refrigerantes.push({ name: refriName, price: refriPrice });
+                }
+                
+                renderRefriSelection();
+                updateCurrentTotal();
+            });
+        });
+        
+        // Finalizar pedido
+        document.getElementById('finalizeOrder').addEventListener('click', function() {
+            if (order.pizzas.length === 0) {
+                alert('Por favor, complete seu pedido antes de finalizar.');
+                return;
+            }
+            
+            // Formatar mensagem para o WhatsApp
+            let message = `*PEDIDO - PIZZARIA CHALÉ*\n\n`;
+            message += `*Cliente:* ${order.customerInfo.name}\n`;
+            message += `*Tipo:* ${order.customerInfo.orderType === 'retirada' ? 'Retirada' : 'Entrega'}\n`;
+            
+            if (order.customerInfo.orderType === 'entrega') {
+                message += `*Endereço:* ${order.customerInfo.address}\n`;
+                message += `*Referência:* ${order.customerInfo.reference}\n`;
+            }
+            
+            message += `*Pagamento:* ${getPaymentMethodText(order.customerInfo.paymentMethod)}\n`;
+            
+            // CORREÇÃO: Incluir troco apenas se for pagamento em dinheiro
+            if (order.customerInfo.paymentMethod === 'dinheiro') {
+                message += `*Troco para:* ${order.customerInfo.changeFor}\n`;
+            }
+            
+            message += `\n*Detalhes do Pedido:*\n`;
+            message += `*Tamanho:* ${order.size}\n`;
+            message += `*Borda:* ${order.borda.type === 'normal' ? 'Normal' : 'Recheada'}${order.borda.price > 0 ? ` (+R$ ${order.borda.price.toFixed(2).replace('.', ',')})` : ''}\n\n`;
+            message += `*Pizzas:*\n`;
+            
+            order.pizzas.forEach((pizza, index) => {
+                message += `${index + 1}. `;
+                if (pizza.type === 'whole') {
+                    message += `Inteira de ${pizza.whole.name}\n`;
+                } else if (pizza.type === 'half') {
+                    message += `Metade ${pizza.half1.name} / Metade ${pizza.half2.name}\n`;
+                }
+            });
+            
+            if (order.refrigerantes.length > 0) {
+                message += `\n*Refrigerantes:*\n`;
+                order.refrigerantes.forEach(refri => {
+                    message += `• ${refri.name} - R$ ${refri.price.toFixed(2).replace('.', ',')}\n`;
+                });
+            }
+            
+            message += `\n*Total: R$ ${order.total.toFixed(2).replace('.', ',')}*\n\n`;
+            message += `_Por favor, confirme este pedido!_`;
+            
+            // Criar link do WhatsApp
+            const whatsappNumber = "5531992382944";
+            const whatsappURL = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(message)}`;
+            
+            // Abrir WhatsApp em uma nova aba
+            window.open(whatsappURL, '_blank');
+        });
+        
+        // Funções auxiliares
+        function goToStep(step) {
+            // Esconder todas as seções
+            section1.classList.remove('active');
+            section2.classList.remove('active');
+            section3.classList.remove('active');
+            section4.classList.remove('active');
+            section5.classList.remove('active');
+            section6.classList.remove('active');
+            
+            // Remover estado ativo de todos os passos
+            step1.classList.remove('active', 'completed');
+            step2.classList.remove('active', 'completed');
+            step3.classList.remove('active', 'completed');
+            step4.classList.remove('active', 'completed');
+            step5.classList.remove('active', 'completed');
+            step6.classList.remove('active', 'completed');
+            
+            // Ativar seção e passo correspondentes
+            if (step === 1) {
+                section1.classList.add('active');
+                step1.classList.add('active');
+            } else if (step === 2) {
+                section2.classList.add('active');
+                step1.classList.add('completed');
+                step2.classList.add('active');
+            } else if (step === 3) {
+                section3.classList.add('active');
+                step1.classList.add('completed');
+                step2.classList.add('completed');
+                step3.classList.add('active');
+            } else if (step === 4) {
+                section4.classList.add('active');
+                step1.classList.add('completed');
+                step2.classList.add('completed');
+                step3.classList.add('completed');
+                step4.classList.add('active');
+            } else if (step === 5) {
+                section5.classList.add('active');
+                step1.classList.add('completed');
+                step2.classList.add('completed');
+                step3.classList.add('completed');
+                step4.classList.add('completed');
+                step5.classList.add('active');
+            } else if (step === 6) {
+                section6.classList.add('active');
+                step1.classList.add('completed');
+                step2.classList.add('completed');
+                step3.classList.add('completed');
+                step4.classList.add('completed');
+                step5.classList.add('completed');
+                step6.classList.add('active');
+            }
+        }
+        
+        function renderPizzaSelection() {
+            pizzaSelectionArea.innerHTML = '';
+            order.pizzas = [];
+            
+            for (let i = 0; i < currentPizzaCount; i++) {
+                const pizzaSelection = document.createElement('div');
+                pizzaSelection.className = 'pizza-selection';
+                pizzaSelection.innerHTML = `
+                    <h3 style="margin: 20px 0 10px; color: var(--primary);">Pizza ${i+1}</h3>
+                    <div class="pizza-type-selector">
+                        <div class="type-option" data-type="whole" data-pizza="${i}">
+                            Pizza Inteira
+                        </div>
+                        <div class="type-option" data-type="half" data-pizza="${i}">
+                            Meio a Meio
+                        </div>
+                    </div>
+                    <div class="whole-pizza-container hidden" id="wholePizza${i}">
+                        <div class="whole-pizza-title">Sabor Inteiro</div>
+                        <div class="selected-pizza-name" id="wholePizzaName${i}">Clique para selecionar</div>
+                    </div>
+                    <div class="half-pizza-container hidden" id="halfPizza${i}">
+                        <div class="half-pizza" data-half="1" data-pizza="${i}">
+                            <div class="half-pizza-title">Metade 1</div>
+                            <div class="selected-pizza-name" id="pizza${i}half1">Clique para selecionar</div>
+                        </div>
+                        <div class="half-pizza" data-half="2" data-pizza="${i}">
+                            <div class="half-pizza-title">Metade 2</div>
+                            <div class="selected-pizza-name" id="pizza${i}half2">Clique para selecionar</div>
+                        </div>
+                    </div>
+                `;
+                
+                pizzaSelectionArea.appendChild(pizzaSelection);
+                
+                // Inicializar pizza no pedido
+                order.pizzas.push({ 
+                    type: 'whole', // Padrão: pizza inteira
+                    whole: null,
+                    half1: null,
+                    half2: null
+                });
+            }
+            
+            // Adicionar eventos para seleção de tipo
+            document.querySelectorAll('.type-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const pizzaIndex = parseInt(this.getAttribute('data-pizza'));
+                    const type = this.getAttribute('data-type');
+                    
+                    // Atualizar tipo da pizza
+                    order.pizzas[pizzaIndex].type = type;
+                    
+                    // Atualizar interface
+                    const wholeContainer = document.getElementById(`wholePizza${pizzaIndex}`);
+                    const halfContainer = document.getElementById(`halfPizza${pizzaIndex}`);
+                    
+                    if (type === 'whole') {
+                        wholeContainer.classList.remove('hidden');
+                        halfContainer.classList.add('hidden');
+                        this.classList.add('selected');
+                        this.nextElementSibling.classList.remove('selected');
+                    } else {
+                        wholeContainer.classList.add('hidden');
+                        halfContainer.classList.remove('hidden');
+                        this.classList.add('selected');
+                        this.previousElementSibling.classList.remove('selected');
+                    }
+                });
+            });
+            
+            // Adicionar eventos de clique para seleção de sabores
+            document.querySelectorAll('.whole-pizza-container').forEach(container => {
+                container.addEventListener('click', function() {
+                    const pizzaIndex = parseInt(this.id.replace('wholePizza', ''));
+                    showPizzaSelectionModal(pizzaIndex, 'whole');
+                });
+            });
+            
+            document.querySelectorAll('.half-pizza').forEach(half => {
+                half.addEventListener('click', function() {
+                    const pizzaIndex = parseInt(this.getAttribute('data-pizza'));
+                    const halfNum = parseInt(this.getAttribute('data-half'));
+                    showPizzaSelectionModal(pizzaIndex, 'half', halfNum);
+                });
+            });
+            
+            // Selecionar primeira opção por padrão
+            document.querySelectorAll('.type-option[data-type="whole"]').forEach(option => {
+                option.click();
+            });
+        }
+        
+        function renderBordaOptions() {
+            bordaOptionsEl.innerHTML = '';
+            
+            const selectedSize = order.size;
+            const bordaPrice = bordaPrices[selectedSize];
+            
+            // Opção de borda normal (sempre disponível)
+            const normalOption = document.createElement('div');
+            normalOption.className = `borda-option ${order.borda.type === 'normal' ? 'selected' : ''}`;
+            normalOption.setAttribute('data-type', 'normal');
+            normalOption.setAttribute('data-price', '0.00');
+            normalOption.innerHTML = `
+                <span class="borda-label">Borda Normal</span>
+                <div class="borda-price">Sem custo adicional</div>
+            `;
+            bordaOptionsEl.appendChild(normalOption);
+            
+            // Opção de borda recheada (se disponível para o tamanho)
+            if (bordaPrice > 0) {
+                const recheadaOption = document.createElement('div');
+                recheadaOption.className = `borda-option ${order.borda.type === 'recheada' ? 'selected' : ''}`;
+                recheadaOption.setAttribute('data-type', 'recheada');
+                recheadaOption.setAttribute('data-price', bordaPrice.toFixed(2));
+                recheadaOption.innerHTML = `
+                    <span class="borda-label">Borda Recheada</span>
+                    <div class="borda-price">R$ ${bordaPrice.toFixed(2).replace('.', ',')}</div>
+                `;
+                bordaOptionsEl.appendChild(recheadaOption);
+            }
+            
+            // Adicionar eventos de clique para as opções de borda
+            bordaOptionsEl.querySelectorAll('.borda-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    bordaOptionsEl.querySelectorAll('.borda-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    this.classList.add('selected');
+                    
+                    order.borda.type = this.getAttribute('data-type');
+                    order.borda.price = parseFloat(this.getAttribute('data-price'));
+                    updateCurrentTotal();
+                });
+            });
+        }
+        
+        function renderRefriSelection() {
+            refriSelectionArea.innerHTML = '';
+            
+            if (order.refrigerantes.length === 0) {
+                refriSelectionArea.innerHTML = '<p style="text-align: center; color: #666; margin: 20px 0;">Nenhum refrigerante selecionado</p>';
+                return;
+            }
+            
+            const refriList = document.createElement('div');
+            refriList.innerHTML = '<h3 style="margin: 20px 0 10px; color: var(--primary);">Refrigerantes Selecionados:</h3>';
+            
+            order.refrigerantes.forEach(refri => {
+                const refriItem = document.createElement('div');
+                refriItem.className = 'order-item';
+                refriItem.innerHTML = `
+                    <div class="order-item-details">
+                        <div class="order-item-name">${refri.name}</div>
+                    </div>
+                    <div class="order-item-price">R$ ${refri.price.toFixed(2).replace('.', ',')}</div>
+                `;
+                refriList.appendChild(refriItem);
+            });
+            
+            refriSelectionArea.appendChild(refriList);
+        }
+        
+        function updateCurrentTotal() {
+            let total = 0;
+            
+            // Adicionar preço das pizzas
+            total += order.sizePrice * currentPizzaCount;
+            
+            // Adicionar borda recheada (se selecionada)
+            total += order.borda.price * currentPizzaCount;
+            
+            // Adicionar refrigerantes
+            order.refrigerantes.forEach(refri => {
+                total += refri.price;
+            });
+            
+            // Adicionar taxa de entrega se for o caso
+            if (order.customerInfo.orderType === 'entrega') {
+                total += 5;
+            }
+            
+            currentTotalValue.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+        
+        function showPizzaSelectionModal(pizzaIndex, type, halfNum = null) {
+            // Criar modal de seleção de sabores
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.zIndex = '1000';
+            
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 10px; padding: 20px; max-width: 90%; max-height: 90%; overflow-y: auto; width: 600px;">
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">Selecione um sabor</h3>
+                    <div class="pizza-grid">
+                        ${menu.map(pizza => `
+                            <div class="pizza-item" data-name="${pizza.name}">
+                                <div class="pizza-name">${pizza.name}</div>
+                                <div class="pizza-ingredients">${pizza.ingredients}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="text-align: right; margin-top: 20px;">
+                        <button class="btn btn-secondary" id="closeModal">Cancelar</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Adicionar eventos para os itens do modal
+            modal.querySelectorAll('.pizza-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const pizzaName = this.getAttribute('data-name');
+                    const pizza = menu.find(p => p.name === pizzaName);
+                    
+                    // Atualizar a pizza no pedido
+                    if (type === 'whole') {
+                        order.pizzas[pizzaIndex].whole = pizza;
+                        document.getElementById(`wholePizzaName${pizzaIndex}`).textContent = pizzaName;
+                    } else if (type === 'half') {
+                        if (halfNum === 1) {
+                            order.pizzas[pizzaIndex].half1 = pizza;
+                        } else {
+                            order.pizzas[pizzaIndex].half2 = pizza;
+                        }
+                        document.getElementById(`pizza${pizzaIndex}half${halfNum}`).textContent = pizzaName;
+                    }
+                    
+                    // Fechar o modal
+                    document.body.removeChild(modal);
+                });
+            });
+            
+            // Fechar modal
+            modal.querySelector('#closeModal').addEventListener('click', function() {
+                document.body.removeChild(modal);
+            });
+        }
+        
+        function renderOrderSummary() {
+            orderItemsEl.innerHTML = '';
+            order.total = 0;
+            
+            // Adicionar tamanho e borda
+            const sizeItem = document.createElement('div');
+            sizeItem.className = 'order-item';
+            sizeItem.innerHTML = `
+                <div class="order-item-details">
+                    <div class="order-item-name">Pizza ${order.size}</div>
+                </div>
+                <div class="order-item-price">R$ ${order.sizePrice.toFixed(2).replace('.', ',')}</div>
+            `;
+            orderItemsEl.appendChild(sizeItem);
+            order.total += order.sizePrice;
+            
+            // Adicionar borda se for recheada
+            if (order.borda.type === 'recheada') {
+                const bordaItem = document.createElement('div');
+                bordaItem.className = 'order-item';
+                bordaItem.innerHTML = `
+                    <div class="order-item-details">
+                        <div class="order-item-name">Borda Recheada</div>
+                    </div>
+                    <div class="order-item-price">R$ ${order.borda.price.toFixed(2).replace('.', ',')}</div>
+                `;
+                orderItemsEl.appendChild(bordaItem);
+                order.total += order.borda.price;
+            }
+            
+            // Adicionar refrigerantes
+            order.refrigerantes.forEach(refri => {
+                const refriItem = document.createElement('div');
+                refriItem.className = 'order-item';
+                refriItem.innerHTML = `
+                    <div class="order-item-details">
+                        <div class="order-item-name">${refri.name}</div>
+                    </div>
+                    <div class="order-item-price">R$ ${refri.price.toFixed(2).replace('.', ',')}</div>
+                `;
+                orderItemsEl.appendChild(refriItem);
+                order.total += refri.price;
+            });
+            
+            // Adicionar taxa de entrega se for o caso
+            if (order.customerInfo.orderType === 'entrega') {
+                const deliveryItem = document.createElement('div');
+                deliveryItem.className = 'order-item';
+                deliveryItem.innerHTML = `
+                    <div class="order-item-details">
+                        <div class="order-item-name">Taxa de Entrega</div>
+                    </div>
+                    <div class="order-item-price">R$ 5,00</div>
+                `;
+                orderItemsEl.appendChild(deliveryItem);
+                order.total += 5;
+            }
+            
+            // Adicionar pizzas
+            order.pizzas.forEach((pizza, index) => {
+                const pizzaItem = document.createElement('div');
+                pizzaItem.className = 'order-item';
+                
+                let pizzaDesc = '';
+                if (pizza.type === 'whole' && pizza.whole) {
+                    pizzaDesc = `Inteira de ${pizza.whole.name}`;
+                } else if (pizza.type === 'half' && pizza.half1 && pizza.half2) {
+                    pizzaDesc = `Metade ${pizza.half1.name} / Metade ${pizza.half2.name}`;
+                } else {
+                    pizzaDesc = 'Sabor não selecionado';
+                }
+                
+                pizzaItem.innerHTML = `
+                    <div class="order-item-details">
+                        <div class="order-item-name">Pizza ${index + 1}</div>
+                        <div class="order-item-desc">${pizzaDesc}</div>
+                    </div>
+                    <div class="order-item-price">-</div>
+                `;
+                
+                orderItemsEl.appendChild(pizzaItem);
+            });
+            
+            // Multiplicar pelo número de pizzas
+            order.total *= currentPizzaCount;
+            
+            orderTotalEl.textContent = `R$ ${order.total.toFixed(2).replace('.', ',')}`;
+        }
+        
+        function getPaymentMethodText(method) {
+            switch(method) {
+                case 'dinheiro': return 'Dinheiro';
+                case 'cartao': return 'Cartão';
+                case 'pix': return 'PIX';
+                default: return method;
+            }
+        }
+    </script>
+</body>
+</html>
